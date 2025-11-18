@@ -35,3 +35,28 @@ export async function createActivity(token, activity) {
     throw Error(result.message);
   }
 }
+
+export async function deleteActivity(token,activityId) {
+  const API = import.meta.env.VITE_API;
+
+  if (!token) {
+    throw Error("You must be signed in to delete an activity.");
+  }
+
+  const response = await fetch(API + "/activities/" + "/activityId",
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer" + token,
+      }
+      
+    }
+    
+  ) 
+  const result = await response.json();
+  
+  if (!response.ok) {throw Error(result.message)}
+  return result;
+
+}

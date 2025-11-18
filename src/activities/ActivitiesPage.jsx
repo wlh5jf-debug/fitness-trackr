@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { getActivities } from "../api/activities";
-
+import { getActivities, deleteActivity } from "../api/activities";
+import { useAuth } from "../auth/AuthContext";
 import ActivityList from "./ActivityList";
 import ActivityForm from "./ActivityForm";
 
 export default function ActivitiesPage() {
+  const { token } = useAuth();
   const [activities, setActivities] = useState([]);
+  const [error, setError] = useState("");
 
   const syncActivities = async () => {
     const data = await getActivities();
@@ -16,11 +18,20 @@ export default function ActivitiesPage() {
     syncActivities();
   }, []);
 
+  const activityDelete = async (activityId) => {
+    try {await deleteActivity(token, activityId);
+      syncActivities();
+    } catch (err) {
+      setError(err.message);
+  }
+
   return (
     <>
       <h1>Activities</h1>
-      <ActivityList activities={activities} />
+      <ActivityList activities={activities}
+      token={token}
+      activityDelete={activityDelete} />
       <ActivityForm syncActivities={syncActivities} />
     </>
   );
-}
+}}
